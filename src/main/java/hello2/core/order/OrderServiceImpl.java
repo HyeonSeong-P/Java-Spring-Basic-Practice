@@ -39,4 +39,10 @@ public class OrderServiceImpl implements OrderService {
         int discountPrice = discountPolicy.discount(member, itemPrice);
         return new Order(memberId, itemName, itemPrice, discountPrice);
     }
+
+
+    // 싱글톤 깨지는지 확인하기 위한 테스트용
+    public MemberRepository getMemberRepository() {
+        return memberRepository;
+    }
 }
