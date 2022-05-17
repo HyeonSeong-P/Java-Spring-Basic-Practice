@@ -1,14 +1,18 @@
 package hello2.core.order;
 
+import hello2.core.annotation.MainDiscountPolicy;
 import hello2.core.discount.DiscountPolicy;
 import hello2.core.discount.FixDiscountPolicy;
 import hello2.core.member.Member;
 import hello2.core.member.MemberRepository;
 import hello2.core.member.MemoryMemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor /**  (lombok 어노테이션)클래스 안에 final이 붙은 field를 보고 그것들을 args로 하는 생성자를 자동으로 만들어준다.*/
 public class OrderServiceImpl implements OrderService {
 
     /**
@@ -26,14 +30,24 @@ public class OrderServiceImpl implements OrderService {
     public void setMemberRepository(MemberRepository memberRepository){
         this.memberRepository = memberRepository;
     }*/
-    private final MemberRepository memberRepository;
-    private final DiscountPolicy discountPolicy;
 
-    @Autowired /** 이게 생성자 주입 **/
+    private final MemberRepository memberRepository;
+
+    /** (@Autowired 필드 명 매칭) 이런식으로 필드 이름이나 파라미터 이름으로 빈 이름을 추가 매칭 가능한데
+     * 이걸로 똑같은 타입의 스프링 빈이 2개 있을 때(ex. 해당 프로젝트의 경우 rate/fix DiscountPolicy) 문제를 해결할 수 있다.
+     * 당연하지만 appconfig xml파일도 수정해줘야 한다.
+     * private final DiscountPolicy rateDiscountPolicy;*/
+
+    /** 똑같은 타입의 스프링 빈이 2개 있을 때 문제 해결법, 컴파일 시 타입 체크가 가능한 애노테이션을 직접 만드는 방법 */
+    @MainDiscountPolicy private final DiscountPolicy discountPolicy;
+
+
+    /** lombok 안 쓸때 autowired 이용한 생성자 주입 법.
+    @Autowired //이게 생성자 주입 , 생성자가 딱 1개만 있으면 @Autowired 생략 가능.
     public OrderServiceImpl(MemberRepository memberRepository, DiscountPolicy discountPolicy) {
         this.memberRepository = memberRepository;
         this.discountPolicy = discountPolicy;
-    }
+    }*/
 
     /**
      * 일반 메서드 주입: 일반 메서드를 통해 주입 받을 수 있음.
