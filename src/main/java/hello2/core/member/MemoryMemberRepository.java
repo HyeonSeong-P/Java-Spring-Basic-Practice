@@ -1,8 +1,11 @@
 package hello2.core.member;
 
+import org.springframework.stereotype.Component;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class MemoryMemberRepository implements MemberRepository{
 
     /** 여러군데에서 접근할 수 있어 동시성 문제때문에 concurrent hashmap을 쓰는 게 바람직함.
