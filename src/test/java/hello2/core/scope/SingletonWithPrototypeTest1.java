@@ -2,12 +2,14 @@ package hello2.core.scope;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Provider;
 
 public class SingletonWithPrototypeTest1 {
     @Test
@@ -32,18 +34,26 @@ public class SingletonWithPrototypeTest1 {
 
         ClientBean clientBean2 = ac.getBean(ClientBean.class);
         int count2 = clientBean2.logic();
-        Assertions.assertThat(count2).isEqualTo(2);
+        Assertions.assertThat(count2).isEqualTo(1);
     }
 
     static class ClientBean{
-        private final PrototypeBean prototypeBean; // 생성시점에만 주입돼서 여러번을 요청해도 같은 걸 쓰게 된다.
+        /**
+         * ObjectProvider
+         * 필요할 때마다 프로토타입을 스프링 컨테이너에 요청할 수 있는 방법!
+         * 그러나 핵심 컨셉은 스프링 컨테이너에서 조회를 대신해주는 것.
+         */
+        /*@Autowired
+        private ObjectProvider<PrototypeBean> prototypeBeanProvider;*/
 
+        /**
+         * javax.inject.Provider
+          */
         @Autowired
-        public ClientBean(PrototypeBean prototypeBean){
-            this.prototypeBean = prototypeBean;
-        }
+        private Provider<PrototypeBean> prototypeBeanProvider;
 
         public int logic(){
+            PrototypeBean prototypeBean = prototypeBeanProvider.get();
             prototypeBean.addCount();
             int count = prototypeBean.getCount();
             return count;
